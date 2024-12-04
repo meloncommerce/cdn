@@ -42,6 +42,7 @@ window.addEventListener("load",function(){
     const option2 = form.querySelector(".melon-product-form-option-2");
     const option3 = form.querySelector(".melon-product-form-option-3");
     const idSelect = form.querySelector("select[name='id']");
+    const btnAddToCart = form.querySelector(".melon-product-form-submit button");
     const priceDisplay = form.querySelector(".melon-product-form-price");
     const updateIdSelectValue = function () {
       const value1 = option1 ? option1.value : null;
@@ -58,8 +59,17 @@ window.addEventListener("load",function(){
         const price = matchedOption.getAttribute("data-price");
         idSelect.value = matchedOption.value;
         if (priceDisplay) priceDisplay.textContent = price;
+        const available = matchedOption.getAttribute("data-available");
+        if (available==1){
+          btnAddToCart.innerHTML = btnAddToCart.getAttribute("data-label");
+          btnAddToCart.classList.remove('melon-btn-disable');          
+        }else{
+          btnAddToCart.innerHTML = 'SOLD OUT';
+          btnAddToCart.classList.add('melon-btn-disable');
+        }
       }else{
-        //No exist variant
+        btnAddToCart.innerHTML = 'UNAVAILABLE';
+        btnAddToCart.classList.add('melon-btn-disable');
       }
     };
     if (option1) option1.addEventListener("change", updateIdSelectValue);
