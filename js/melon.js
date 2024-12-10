@@ -8,7 +8,7 @@ function melonSwiperJS() {
     document.body.appendChild(swiperCSS);
 }
 
-//MELON PRODUCT FORM
+//MELON PRODUCT FORM ***************************************************************************************************
 window.addEventListener("load",function(){
   
     // Quantity
@@ -78,4 +78,86 @@ window.addEventListener("load",function(){
     updateIdSelectValue();
   });
   
+},false);
+
+
+//BULK ORDER FORM ***************************************************************************************************
+
+window.addEventListener("load",function(){
+  if (document.querySelectorAll('.has-melon-swiper').length > 0) {        
+    if (typeof Swiper === 'undefined') melonSwiperJS();
+    if (document.querySelectorAll('.melon-bulk-order-form-photos').length  > 0) {
+      document.querySelectorAll('.melon-bulk-order-form-photos').forEach(function(item, index) {
+          var swiperClass = '.melon-bulk-order-form-swiper-' + item.getAttribute("data-block-id");
+          var swiperApps = new Swiper(swiperClass, {
+          slidesPerView: 1,
+          spaceBetween: 10,
+          loop: true,
+          lazy: true,
+          draggable: true,
+          autoplay: { delay: 3000 },
+          navigation: {
+            nextEl: '.swiper-button-next',
+            prevEl: '.swiper-button-prev',
+          }
+        });          
+      });
+    }
+  }
+  function createAddToCartItem(id, quantity, formData) {
+      const newItem = {
+          'id': id,
+          'quantity': quantity
+      };
+      formData.items.push(newItem);
+  }
+  // Quantity
+  document.addEventListener('click', function (event) {      
+    if (event.target.matches('.melon-bulk-order-form-addtocart')) {
+      var formData = {'items': []};
+      var wrapper = event.target.closest('.melon-bulk-order-form-container');
+      var qtys = wrapper.querySelectorAll('input.melon-bulk-order-form-quantity');
+      qtys.forEach((qty) => {
+        var qtyValue = parseInt(qty.value);
+        if (qtyValue > 0) {
+          createAddToCartItem(qty.getAttribute('data-variant-id'), qtyValue, formData);
+        }
+      });
+      if (formData.items.length === 0) {
+        alert(event.target.getAttribute('data-message'));
+      } else {
+        fetch(window.Shopify.routes.root + 'cart/add.js', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify(formData)
+        }).then(response => {
+          window.location.href = window.Shopify.routes.root + event.target.getAttribute('data-action');
+        }).catch((error) => {
+          alert('Error:', error);
+        });
+      }
+    }
+  });
+  const qtyforms = document.querySelectorAll(".melon-bulk-order-form-variant-qty");
+  qtyforms.forEach(function (form) {
+    const minusButton = form.querySelector(".melon-bulk-order-form-btn-minus");
+    const plusButton = form.querySelector(".melon-bulk-order-form-btn-plus");
+    const quantityInput = form.querySelector("input.melon-bulk-order-form-quantity");
+    minusButton.addEventListener("click", function () {
+      const currentValue = parseInt(quantityInput.value, 10);
+      if (currentValue > 0) {
+        quantityInput.value = currentValue - 1;
+      }
+    });
+    plusButton.addEventListener("click", function () {
+      const currentValue = parseInt(quantityInput.value, 10);
+      quantityInput.value = currentValue + 1;
+    });
+    quantityInput.addEventListener("input", function () {
+      const currentValue = parseInt(quantityInput.value, 10);
+      if (isNaN(currentValue) || currentValue < 0) {
+        quantityInput.value = 0;
+      }
+    });
+  });
 },false);
