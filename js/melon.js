@@ -10,6 +10,28 @@ function melonSwiperJS() {
 
 //MELON PRODUCT FORM ***************************************************************************************************
 window.addEventListener("load",function(){
+
+    //Swiper
+    if (document.querySelectorAll('.has-melon-swiper').length > 0) {        
+      if (typeof Swiper === 'undefined') melonSwiperJS();
+      if (document.querySelectorAll('.melon-product-form-gallery-swiper').length  > 0) {
+        document.querySelectorAll('.melon-product-form-gallery-swiper').forEach(function(item, index) {
+            var swiperClass = '.melon-product-form-gallery-swiper-' + item.getAttribute("data-block-id");
+            var swiperApps = new Swiper(swiperClass, {
+        		slidesPerView: 1,
+        		spaceBetween: 10,
+        		loop: true,
+        		lazy: true,
+        		draggable: true,
+        		autoplay: { delay: 3000 },
+        		navigation: {
+        			nextEl: '.swiper-button-next',
+        			prevEl: '.swiper-button-prev',
+        		}
+        	});          
+        });
+      }
+    }
   
     // Quantity
     const qtyforms = document.querySelectorAll(".melon-product-form-quantity");
