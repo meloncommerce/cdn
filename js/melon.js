@@ -166,20 +166,16 @@ window.addEventListener("load",function(){
     const plusButton = form.querySelector(".melon-bulk-order-form-btn-plus");
     const quantityInput = form.querySelector("input.melon-bulk-order-form-quantity");
     minusButton.addEventListener("click", function () {
-      const currentValue = parseInt(quantityInput.value, 10);
-      if (currentValue > 0) {
-        quantityInput.value = currentValue - 1;
-      }
+      const currentValue = parseInt(quantityInput.value);
+      if (currentValue > 0) quantityInput.value = currentValue - 1;      
     });
     plusButton.addEventListener("click", function () {
-      const currentValue = parseInt(quantityInput.value, 10);
+      const currentValue = parseInt(quantityInput.value);
       quantityInput.value = currentValue + 1;
     });
     quantityInput.addEventListener("input", function () {
-      const currentValue = parseInt(quantityInput.value, 10);
-      if (isNaN(currentValue) || currentValue < 0) {
-        quantityInput.value = 0;
-      }
+      const currentValue = parseInt(quantityInput.value);
+      if (isNaN(currentValue) || currentValue < 0) quantityInput.value = 0;
     });
   });
 },false);
