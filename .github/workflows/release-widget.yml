@@ -1,0 +1,38 @@
+# Tags a release whenever the widget scripts change, so jsDelivr serves them at a new,
+# immutable URL (…/cdn@<tag>/js/melon-widget-core.min.js). The app picks the newest tag
+# from the GitHub API, so no cache purge is needed for the core script.
+name: Release widget script
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'js/melon-widget.js'
+      - 'js/melon-widget-core.js'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Tag the next patch version
+        run: |
+          latest=$(git tag --list '[0-9]*.[0-9]*.[0-9]*' --sort=-v:refname | head -n 1)
+          latest=${latest:-0.0.0}
+          IFS=. read -r major minor patch <<< "$latest"
+          next="$major.$minor.$((patch + 1))"
+          git tag "$next" "$GITHUB_SHA"
+          git push origin "$next"
+          echo "Released $next"
+
+      # The loader is embedded without a version, so refresh jsDelivr's copy of it.
+      - name: Refresh the loader on jsDelivr
+        run: |
+          curl -fsS "https://purge.jsdelivr.net/gh/meloncommerce/cdn/js/melon-widget.min.js" || true
+          curl -fsS "https://purge.jsdelivr.net/gh/meloncommerce/cdn/js/melon-widget.js" || true
